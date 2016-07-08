@@ -6,7 +6,77 @@
 </head>
 <script type="text/javascript" src="node_modules/hellojs/dist/hello.all.min.js"> </script>
 <script type="text/javascript" src="/script.js"> </script>
+<style>
+	.images {
+		background: #cecece;
+		padding: .5em;
+	}
+	.images img{
+		width: 36px;
+		height: 36px;
+		margin: .25em;
+	}
+</style>
 <body>
-	<button onclick="hello('facebook').login()">windows</button>
+	<script type="text/javascript">
+		hello.init({
+
+			wrike: {
+
+				name: 'Wrike',
+
+				oauth: {
+					version: 2,
+					auth: 'https://www.wrike.com/oauth2/authorize',
+					grant: 'https://www.wrike.com/oauth2/token',
+					response_type: 'code'
+				},
+
+				base: 'https://www.wrike.com/api/v3',
+
+				get: {
+					me: '/contacts'
+				},
+
+				wrap: {
+					me: function(o) {
+						console.log(o);
+						return o;
+					},
+				},
+
+				xhr: function(p) {
+					console.log(p);
+
+					p.proxy = true;
+					p.proxy_response_type = 'proxy';
+					return true;
+				},
+
+				jsonp: false
+			}
+		});
+		hello.init({
+			wrike: 'tiz3NhgG'
+		}, {
+			redirect_uri: '/redirect.html'
+		});
+
+hello.on('auth.login', function(auth) {
+
+	// Call user information, for the given network
+	hello(auth.network).api('me').then(function(o) {
+						o.data.forEach(function(item){
+							var img = document.createElement("img");
+							img.src = item.avatarUrl;
+							var src = document.querySelector(".images");
+							src.appendChild(img);
+						});
+	});
+});
+	</script>
+	<button onclick="hello('wrike').login()">windows</button>
+	<div id="profile"></div>
+	<div class="images"></div>
 </body>
 </html>
